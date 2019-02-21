@@ -42,20 +42,31 @@ void RF24L01_init(void) {
   SPI_Cmd(SPI1, ENABLE);  
 }
 
+void RF24L01_PowerDown(void)
+{
+  RF24L01_reg_CONFIG_content config;
+  *((uint8_t *)&config) = 0;
+  config.PWR_UP = 0;
+  config.PRIM_RX = 1;
+  config.EN_CRC = 1;
+  config.CRCO = 1;
+  config.MASK_MAX_RT = 0;
+  config.MASK_TX_DS = 0;
+  config.MASK_RX_DR = 0;
+  RF24L01_write_register(RF24L01_reg_CONFIG, ((uint8_t *)&config), 1);
+}
+
 void RF24L01_DeInit(void) {
   disableInterrupts();
+  RF24L01_PowerDown();
   CE_LOW;
   CSN_LOW;
   SPI_Cmd(SPI1, DISABLE);
-  
+
   GPIO_Init(GPIOB, GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6, GPIO_Mode_Out_PP_Low_Slow);
   GPIO_Init(GPIOB, GPIO_Pin_7, GPIO_Mode_In_FL_No_IT);
   
-#ifdef PCB_10_BUTTONS    
-  GPIO_Init(GPIOD, GPIO_Pin_4, GPIO_Mode_Out_PP_Low_Slow);
-#else
   GPIO_Init(GPIOC, GPIO_Pin_6, GPIO_Mode_Out_PP_Low_Slow);
-#endif
   
   GPIO_Init(GPIOD, GPIO_Pin_5, GPIO_Mode_In_FL_IT);
   enableInterrupts();

@@ -163,6 +163,7 @@ typedef enum {
         V_RELAY_ON = 65,        // Xlight relay on
         V_RELAY_OFF,            // Xlight relay off
         V_RELAY_MAP,		// Xlight relay keymap
+        V_REMOTE_KEY,						// Xlight remote
 
 } mysensor_data;
 
@@ -286,18 +287,6 @@ typedef struct
 	uint8_t sensor;          	 	// 8 bit - Id of sensor that this message concerns.
 } MyMsgHeader_t;
 
-typedef struct
-{
-	uint8_t last;            	 	
-	uint8_t sender;          
-	uint8_t destination;    
-	uint8_t version_length;				             			                 
-	uint8_t command_ack_payload; 
-	uint8_t type;           	 	
-	uint8_t sensor;  
-        uint8_t uniqueid[UNIQUE_SIZE];
-} MyMsgHeaderNew_t;
-
 // Each message can transfer a payload. We add one extra byte for string
 // terminator \0 to be "printable" this is not transferred OTA
 // This union is used to simplify the construction of the binary data types transferred.
@@ -325,17 +314,7 @@ typedef struct
 	MyMsgPayload_t payload;
 } MyMessage_t;
 
-typedef struct
-{
-	MyMsgHeaderNew_t header;
-	MyMsgPayload_t payload;
-} MyMessageNew_t;
-
-#ifdef ENABLE_SDTM
-extern MyMessageNew_t rcvMsg;
-#else
 extern MyMessage_t rcvMsg;
-#endif
 extern MyMessage_t sndMsg;
 extern uint8_t *psndMsg;
 extern uint8_t *prcvMsg;
